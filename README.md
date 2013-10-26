@@ -27,6 +27,7 @@ Prerequisites
 
 Gotchyas (really, read this)
 ============================
+
 Right now the execution of firefox is wonky.  If it breaks it breaks, kill 
 firefox if it does decide to act weird.  Also make sure you kill pipelight
 if it hangs, otherwise you'll get complaints about multiple sessions of it
@@ -37,4 +38,11 @@ you'll need to have fluxbox or some other manager running.
 
 You need mouse support working.  This is what xdotool uses to gain focus to the
 pipelight plugin to make it full screen.
+
+
+Thank You
+=========
+
+Thank you to my fiancee who has put up with my neglect over the past few days
+while I worked on this addon.
 
