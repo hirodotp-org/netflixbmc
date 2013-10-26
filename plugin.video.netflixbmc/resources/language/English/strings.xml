@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+    <string id="30001">Netflix</string>
+
+    <string id="30010">E-mail</string>
+    <string id="30014">Password</string>
+    <string id="30015">Fullscreen Delay (minimum 20 seconds)</string>
+</strings>

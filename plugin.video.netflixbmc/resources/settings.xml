@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="32001">
+        <setting label="30010" type="text" id="email" default=""/>
+        <setting label="30014" type="text" id="password" option="hidden"  enable="!eq(-1,)" default=""/>
+	<setting label="30015" type="number" id="delay" default="20" range="1,60" option="int" />
+    </category>
+</settings>
