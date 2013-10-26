@@ -10,7 +10,11 @@ __credits__ = "hirodotp"
 
 __settings__ = Addon( id="plugin.video.netflixbmc" )
 
-TOP_CATEGORIES = [ {'title': "Instant Queue", 'link': 'instant'}, {'title': "Movies by Genre", 'link': 'genre'} ]
+TOP_CATEGORIES = [
+			{'title': "Instant Queue", 'link': 'instant'}, 
+			{'title': "New Release", 'link': 'new'},
+			{'title': "Movies by Genre", 'link': 'genre'}
+]
 
 CAT_GENRES = [ 
 		{'title': "Action & Adventure", 'link': 'action'}, 
@@ -113,7 +117,11 @@ class Main:
 					scraper = NetflixbmcScraper()
 					scraper.SignIn(self.settings['email'], self.settings['password'])
 					mylist = scraper.GetMyList()
-					print str(mylist)
+					self.DisplayMyList(mylist)
+				elif category == 'new':
+					scraper = NetflixbmcScraper()
+					scraper.SignIn(self.settings['email'], self.settings['password'])
+					mylist = scraper.GetNewReleaseList()
 					self.DisplayMyList(mylist)
 				elif category == 'genre':
 					print "IN Category Genre"
@@ -130,7 +138,6 @@ class Main:
 						scraper = NetflixbmcScraper()
 						scraper.SignIn(self.settings['email'], self.settings['password'])
 						mylist = scraper.GetGenreList(GENRE_ID_MAP[genre])
-						print str(mylist)
 						self.DisplayMyList(mylist)
 		else:
 			self.DisplayTopCategories()
