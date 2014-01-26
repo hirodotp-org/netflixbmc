@@ -26,6 +26,12 @@ class NetflixbmcScraper:
 		req = urllib2.Request(url, post, headers)
 		opener.open(req)
 		
+	def GetCookies(self):
+		cookies = []
+		for cookie in self.cj:
+			cookies.append([cookie.name, cookie.value])
+		return cookies
+
 	def GetMyList(self):
 		url = 'http://movies.netflix.com/MyList?leid=595&link=seeall'
 		hdrs = { 'User-Agent' : self.ua }

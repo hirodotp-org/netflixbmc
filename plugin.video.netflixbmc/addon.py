@@ -3,6 +3,7 @@ import os, re, sys, time
 import xbmc, xbmcgui, xbmcplugin
 from xbmcaddon import Addon
 from resources.lib.netflixbmc import NetflixbmcScraper
+from resources.lib.pipelight import Pipelight
 
 __plugin__ = "Netflixbmc"
 __authors__ = "hirodotp"
@@ -90,15 +91,20 @@ class Main:
 			if movie:
 				movie = urllib2.unquote(movie)
 				print "Playing movie " + movie
-				os.system("/usr/bin/firefox '%s' &" % (movie))
-				time.sleep(int(self.settings['delay']))
-				os.system("/usr/bin/xdotool mousemove 500 500")
-				time.sleep(1)
-				os.system("/usr/bin/xdotool click 1")
-				time.sleep(5)
-				os.system("/usr/bin/xdotool key f")
-				time.sleep(1)
-				os.system("/usr/bin/xdotool mousemove 0 0")
+				scraper = NetflixbmcScraper()
+				scraper.SignIn(self.settings['email'], self.settings['password'])
+				cookies = scraper.GetCookies()
+				player = Pipelight()
+				player.play(movie, cookies)
+				#os.system("/usr/bin/firefox '%s' &" % (movie))
+				#time.sleep(int(self.settings['delay']))
+				#os.system("/usr/bin/xdotool mousemove 500 500")
+				#time.sleep(1)
+				#os.system("/usr/bin/xdotool click 1")
+				#time.sleep(5)
+				#os.system("/usr/bin/xdotool key f")
+				#time.sleep(1)
+				#os.system("/usr/bin/xdotool mousemove 0 0")
 			elif category:
 				category = urllib2.unquote(category)
 				try:
