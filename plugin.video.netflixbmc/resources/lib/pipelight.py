@@ -138,9 +138,7 @@ class Pipelight:
 			app = QtGui.QApplication([]) #(sys.argv) ?
 			app.setAttribute(QtCore.Qt.AA_NativeWindows, True)
 			mainWindow = PipelightMainWindow(page, cookies)
-			#mainWindow.resize(800, 600)
-			mainWindow.showNormal()
-			#mainWindow.showFullScreen()
+			mainWindow.showFullScreen()
 			app.exec_()
 		finally:
 			# Delete the temporary plugin dir

@@ -2,6 +2,7 @@ import cookielib, urllib, urllib2
 import os, re, sys, time
 import xbmc, xbmcgui, xbmcplugin
 from xbmcaddon import Addon
+from PyQt4 import QtCore, QtGui
 from resources.lib.netflixbmc import NetflixbmcScraper
 from resources.lib.pipelight import Pipelight
 
