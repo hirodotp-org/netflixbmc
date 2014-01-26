@@ -97,14 +97,12 @@ class NetflixbmcScraper:
 		data = response.read()
 
 		pattern = re.compile(r'<div class="agMovie.*?boxShotImg.*?alt="(.*?)".*?src="(.*?)".*?href="(.*?)".*?</div>', re.DOTALL)
-		#pattern = re.compile(r'(<div class="agMovie(.*?)</div>)', re.DOTALL)
 
 		for match in pattern.finditer(data):
 			title=match.group(1)
 			boxart=match.group(2)
 			movie = match.group(3)
 			titles.append({'title': title, 'boxart': boxart, 'movie': movie})
-			print "title=%s		boxart=%s	movie=%s" % (title, boxart, movie)
 
 		return(titles)
 

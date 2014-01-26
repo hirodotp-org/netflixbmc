@@ -117,8 +117,6 @@ class Browser(QtWebKit.QWebView):
 
 class Pipelight:
 	def __init__(self):
-		#os.putenv("PIPELIGHT_GPUACCELERATION", "1")
-
 		if not os.path.exists("%s/%s" % (PIPELIGHT_LIBDIR, PIPELIGHT_LIBRARY)):
 			print "It looks like pipelight is not installed! Unable to find '%s'." % PIPELIGHT_LIBRARY
 			sys.exit(1)
