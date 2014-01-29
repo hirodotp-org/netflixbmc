@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Test for example with:
 # python pipelight-xbmc.py "http://www.lovefilm.de/film/?token=%3Fu%3D%252Fcatalog%252Ftitle%252F326573%26m%3DGET"
@@ -93,11 +93,9 @@ class Browser(QtWebKit.QWebView):
 		# setup cookies
 		cookieList = []
 		for cookie in cookies:
-			print cookie[0], cookie[1], " === "
 			cookieList.append(QtNetwork.QNetworkCookie(cookie[0], cookie[1]))
 		cookieJar = QtNetwork.QNetworkCookieJar()
 		cookieJar.setCookiesFromUrl(cookieList, QtCore.QUrl(url))
-		print cookieJar
 		nmanager = QtNetwork.QNetworkAccessManager()
 		nmanager.setCookieJar(cookieJar)
 
@@ -146,3 +144,26 @@ class Pipelight:
 				except OSError as e:
 					if e.errno != 2:
 						raise
+
+if __name__ == "__main__":
+	sys.argv.pop(0)
+	url = sys.argv.pop(0)
+
+	cookies = []
+	c = []
+	i = True
+	for cookie in sys.argv:
+		c.append(cookie)
+		if i:
+			i = False
+		else:
+			i = True
+			cookies.append(c)
+			c = []
+			
+	print "======= BEGIN SCRIPT ======="
+	print url
+	print cookies
+	player = Pipelight()
+	player.play(url, cookies)
+

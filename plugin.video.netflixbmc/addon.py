@@ -1,10 +1,10 @@
 import cookielib, urllib, urllib2
+import subprocess
 import os, re, sys, time
 import xbmc, xbmcgui, xbmcplugin
 from xbmcaddon import Addon
 from PyQt4 import QtCore, QtGui
 from resources.lib.netflixbmc import NetflixbmcScraper
-from resources.lib.pipelight import Pipelight
 
 __plugin__ = "Netflixbmc"
 __authors__ = "hirodotp"
@@ -71,7 +71,6 @@ class Main:
 		self._path = sys.argv[0]
 		self._handle = int(sys.argv[1])
 		self._get_settings()
-		print str(sys.argv)
 
 		param = sys.argv[2]
 		if param:
@@ -95,8 +94,17 @@ class Main:
 				scraper = NetflixbmcScraper()
 				scraper.SignIn(self.settings['email'], self.settings['password'])
 				cookies = scraper.GetCookies()
-				player = Pipelight()
-				player.play(movie, cookies)
+
+				home = os.getenv("HOME")
+				cmd = os.path.abspath("%s/.xbmc/addons/plugin.video.netflixbmc/resources/lib/pipelight.py" % (home))
+				args = [cmd, movie]
+				for cookie in cookies:
+					args.append(cookie[0])
+					args.append(cookie[1])
+
+				print "Running ", args
+				subprocess.call(args)
+
 				#os.system("/usr/bin/firefox '%s' &" % (movie))
 				#time.sleep(int(self.settings['delay']))
 				#os.system("/usr/bin/xdotool mousemove 500 500")
