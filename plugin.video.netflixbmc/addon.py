@@ -97,23 +97,12 @@ class Main:
 
 				home = os.getenv("HOME")
 				cmd = os.path.abspath("%s/.xbmc/addons/plugin.video.netflixbmc/resources/lib/pipelight.py" % (home))
-				args = [cmd, movie]
+				args = [cmd, self.settings['pipelightName'], self.settings['pipelightDirectory'], self.settings['mozillaDirectory'], movie]
 				for cookie in cookies:
 					args.append(cookie[0])
 					args.append(cookie[1])
 
-				print "Running ", args
 				subprocess.call(args)
-
-				#os.system("/usr/bin/firefox '%s' &" % (movie))
-				#time.sleep(int(self.settings['delay']))
-				#os.system("/usr/bin/xdotool mousemove 500 500")
-				#time.sleep(1)
-				#os.system("/usr/bin/xdotool click 1")
-				#time.sleep(5)
-				#os.system("/usr/bin/xdotool key f")
-				#time.sleep(1)
-				#os.system("/usr/bin/xdotool mousemove 0 0")
 			elif category:
 				category = urllib2.unquote(category)
 				try:
@@ -184,9 +173,11 @@ class Main:
 	def _get_settings( self ):
 		# get the users preference settings
 		self.settings = {}
-		self.settings["email"] = __settings__.getSetting( "email" )
-		self.settings["password"] = __settings__.getSetting( "password" )
-		self.settings["delay"] = __settings__.getSetting( "delay" )
+		self.settings["email"] = __settings__.getSetting("email")
+		self.settings["password"] = __settings__.getSetting("password")
+		self.settings["pipelightName"] = __settings__.getSetting("pipelightName")
+		self.settings["pipelightDirectory"] = __settings__.getSetting("pipelightDirectory")
+		self.settings["mozillaDirectory"] = __settings__.getSetting("mozillaDirectory")
 
 if __name__ == "__main__":
 	import resources.lib.netflixbmc as plugin

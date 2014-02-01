@@ -114,12 +114,16 @@ class Browser(QtWebKit.QWebView):
 
 
 class Pipelight:
-	def __init__(self):
-		if not os.path.exists("%s/%s" % (PIPELIGHT_LIBDIR, PIPELIGHT_LIBRARY)):
-			print "It looks like pipelight is not installed! Unable to find '%s'." % PIPELIGHT_LIBRARY
+	def __init__(self, pipelightName, pipelightDirectory, mozillaDirectory):
+		self.pipelightName = pipelightName
+		self.pipelightDirectory = pipelightDirectory
+		self.mozillaDirectory = mozillaDirectory
+
+		if not os.path.exists("%s/%s" % (self.pipelightDirectory, self.pipelightName)):
+			print "It looks like pipelight is not installed! Unable to find '%s'." % self.pipelightName
 			sys.exit(1)
 
-		self.enabled_systemwide = os.path.exists("%s/%s" % (MOZILLA_PLUGINDIR, PIPELIGHT_LIBRARY))
+		self.enabled_systemwide = os.path.exists("%s/%s" % (self.mozillaDirectory, self.pipelightName))
 		self.plugin_tempdir = None
 
 	def play(self, page, cookies = []):
@@ -127,7 +131,7 @@ class Pipelight:
 			# Pipelight not enabled systemwide, create a temporary plugin dir
 			if not self.enabled_systemwide:
 				plugin_tempdir = tempfile.mkdtemp()
-				os.symlink("%s/%s" % (PIPELIGHT_LIBDIR, PIPELIGHT_LIBRARY), "%s/%s" % (plugin_tempdir, PIPELIGHT_LIBRARY))
+				os.symlink("%s/%s" % (self.pipelightDirectory, self.pipelightName), "%s/%s" % (plugin_tempdir, self.pipelightName))
 				os.putenv("MOZ_PLUGIN_PATH", plugin_tempdir)
 
 			# Show the Silverlight plugin in a QtGui window
@@ -146,7 +150,11 @@ class Pipelight:
 						raise
 
 if __name__ == "__main__":
+	print sys.argv
 	sys.argv.pop(0)
+	pipelightName = sys.argv.pop(0)
+	pipelightDirectory = sys.argv.pop(0)
+	mozillaDirectory = sys.argv.pop(0)
 	url = sys.argv.pop(0)
 
 	cookies = []
@@ -164,6 +172,6 @@ if __name__ == "__main__":
 	print "======= BEGIN SCRIPT ======="
 	print url
 	print cookies
-	player = Pipelight()
+	player = Pipelight(pipelightName, pipelightDirectory, mozillaDirectory)
 	player.play(url, cookies)
 

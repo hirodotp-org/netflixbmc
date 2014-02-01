@@ -2,8 +2,11 @@
 <strings>
 
     <string id="30001">Netflix</string>
+    <string id="30002">Pipelight</string>
 
     <string id="30010">E-mail</string>
     <string id="30014">Password</string>
-    <string id="30015">Fullscreen Delay (minimum 20 seconds)</string>
+    <string id="30018">Pipelight Plugin Name</string>
+    <string id="30022">Pipelight Library Directory</string>
+    <string id="30026">Mozilla Plugin Directory</string>
 </strings>
