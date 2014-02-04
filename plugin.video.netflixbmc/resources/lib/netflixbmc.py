@@ -1,5 +1,6 @@
 import cookielib, urllib, urllib2
 import re
+import random
 
 class NetflixbmcScraper:
 	def __init__(self):
@@ -33,23 +34,52 @@ class NetflixbmcScraper:
 		return cookies
 
 	def GetMyList(self):
-		url = 'http://movies.netflix.com/MyList?leid=595&link=seeall'
+		url = 'http://movies.netflix.com/MyList'
 		hdrs = { 'User-Agent' : self.ua }
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 		req = urllib2.Request(url, headers=hdrs)
 		response = opener.open(req)
 		data = response.read()
-		
-		results1 = re.search(r'.*?agMovieSet.*?agMovieGallery.*?list\-items">(.*)', data)
-		pattern = re.compile(r'(<div class="agMovie.*?boxShotImg.*?alt="(.*?)".*?src="(.*?)".*?href="(.*?)".*?<\/div>)')
-
 		titles = []
-		if results1:
-			for match in pattern.finditer(results1.group()): 
-				title=match.group(2)
-				boxart=match.group(3)
-				movie = match.group(4)
+		
+		# check if we are using manual sorting or not
+		res = re.search(r'Change order to:.*?MANUAL.*?</a>', data)
+		if not res:
+			# using manual sorting
+			res = re.search(r'<input class="evoSubmit" type="submit" value="Update List">(.*)', data, re.DOTALL)
+			data = res.group(1)
+			pattern = re.compile(r'<span class="title.*?"><a.*?>(.*?)</a></span>.*?<td.*?href=\'(.*?)\'', re.DOTALL)
+			print "==== matches ===="
+			for match in pattern.finditer(data):
+				title = match.group(1)
+				movie = match.group(2)
+	
+				# generate boxart url
+				# The Virgin Suicides","boxshots":{"small":3960650,"medium":3960652,"large":3960654}}
+				boxart = ''
+				searchStr = r'","boxshots":{"small":.*?,"medium":.*?,"large":(.*?)}}'
+				searchStr = "%s%s" % (title, searchStr)
+				res = re.search(searchStr, data)
+				if res:
+					boxid = res.group(1)
+					boxgroup = boxid[-4:]
+					cdn = random.randrange(0, 9)
+					boxart = "http://cdn%d.nflximg.net/images/%s/%s.jpg" % (cdn, boxgroup, boxid)
+				
+				# append movie to title list
 				titles.append({'title': title, 'boxart': boxart, 'movie': movie})
+		else:
+			# using auto sorting
+			results1 = re.search(r'.*?agMovieSet.*?agMovieGallery.*?list\-items">(.*)', data)
+			pattern = re.compile(r'(<div class="agMovie.*?boxShotImg.*?alt="(.*?)".*?src="(.*?)".*?href="(.*?)".*?<\/div>)')
+
+			if results1:
+				for match in pattern.finditer(results1.group()): 
+					title=match.group(2)
+					boxart=match.group(3)
+					movie = match.group(4)
+					# append movie to title list
+					titles.append({'title': title, 'boxart': boxart, 'movie': movie})
 
 		return(titles)
 
