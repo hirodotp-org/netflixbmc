@@ -118,11 +118,30 @@ class NetflixbmcScraper:
 		return(titles)
 
         def GetNewReleaseList(self):
-		page = 1
 		titles = []
 		hdrs = { 'User-Agent' : self.ua }
 
 		url = 'http://movies.netflix.com/NewReleases'
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
+		req = urllib2.Request(url, headers=hdrs)
+		response = opener.open(req)
+		data = response.read()
+
+		pattern = re.compile(r'<div class="agMovie.*?boxShotImg.*?alt="(.*?)".*?src="(.*?)".*?href="(.*?)".*?</div>', re.DOTALL)
+
+		for match in pattern.finditer(data):
+			title=match.group(1)
+			boxart=match.group(2)
+			movie = match.group(3)
+			titles.append({'title': title, 'boxart': boxart, 'movie': movie})
+
+		return(titles)
+
+	def GetRecentReleaseList(self):
+		titles = []
+		hdrs = { 'User-Agent' : self.ua }
+
+		url = 'http://movies.netflix.com/WiRecentAdditionsGallery?nRR=arrivalDate&nRT=all'
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 		req = urllib2.Request(url, headers=hdrs)
 		response = opener.open(req)

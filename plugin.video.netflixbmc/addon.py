@@ -15,6 +15,7 @@ __settings__ = Addon( id="plugin.video.netflixbmc" )
 TOP_CATEGORIES = [
 			{'title': "Instant Queue", 'link': 'instant'}, 
 			{'title': "New Release", 'link': 'new'},
+			{'title': "Recently Added", 'link': 'recent'},
 			{'title': "High Definition", 'link': 'hd'},
 			{'title': "Movies by Genre", 'link': 'genre'}
 ]
@@ -136,6 +137,11 @@ class Main:
 					scraper = NetflixbmcScraper()
 					scraper.SignIn(self.settings['email'], self.settings['password'])
 					mylist = scraper.GetHDReleaseList(self.settings['maxTitles'])
+					self.DisplayMyList(mylist)
+				elif category == 'recent':
+					scraper = NetflixbmcScraper()
+					scraper.SignIn(self.settings['email'], self.settings['password'])
+					mylist = scraper.GetRecentReleaseList()
 					self.DisplayMyList(mylist)
 		else:
 			self.DisplayTopCategories()
