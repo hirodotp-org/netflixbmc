@@ -15,6 +15,7 @@ __settings__ = Addon( id="plugin.video.netflixbmc" )
 TOP_CATEGORIES = [
 			{'title': "Instant Queue", 'link': 'instant'}, 
 			{'title': "New Release", 'link': 'new'},
+			{'title': "High Definition", 'link': 'hd'},
 			{'title': "Movies by Genre", 'link': 'genre'}
 ]
 
@@ -85,12 +86,8 @@ class Main:
 			except:
 				category = None
 
-			print "Movie " + str(movie)
-			print "Category " + str(category)
-
 			if movie:
 				movie = urllib2.unquote(movie)
-				print "Playing movie " + movie
 				scraper = NetflixbmcScraper()
 				scraper.SignIn(self.settings['email'], self.settings['password'])
 				cookies = scraper.GetCookies()
@@ -112,11 +109,6 @@ class Main:
 				except:
 					genre = None
 					
-
-				print "Movie 2 " + str(genre)
-				print "Category 2 " + str(category)
-				
-
 				if category == 'instant':
 					scraper = NetflixbmcScraper()
 					scraper.SignIn(self.settings['email'], self.settings['password'])
@@ -128,28 +120,29 @@ class Main:
 					mylist = scraper.GetNewReleaseList()
 					self.DisplayMyList(mylist)
 				elif category == 'genre':
-					print "IN Category Genre"
 					try:
 						genre = genre.split("//").pop(0)
 					except:
 						genre = None
-
-					print "genre: " + str(genre)
 
 					if genre is None:
 						self.DisplayGenres()
 					else:
 						scraper = NetflixbmcScraper()
 						scraper.SignIn(self.settings['email'], self.settings['password'])
-						mylist = scraper.GetGenreList(GENRE_ID_MAP[genre])
+						mylist = scraper.GetGenreList(GENRE_ID_MAP[genre], self.settings['maxTitles'])
 						self.DisplayMyList(mylist)
+				elif category == 'hd':
+					scraper = NetflixbmcScraper()
+					scraper.SignIn(self.settings['email'], self.settings['password'])
+					mylist = scraper.GetHDReleaseList(self.settings['maxTitles'])
+					self.DisplayMyList(mylist)
 		else:
 			self.DisplayTopCategories()
 
 	def DisplayMyList(self, mylist):
 		for item in mylist:
 			listitem = xbmcgui.ListItem(item['title'], iconImage=item['boxart'], thumbnailImage=item['boxart'])
-			print "Adding item " + str(item)
 			movie = urllib.urlencode({'movie': item['movie']})
 			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?%s" % (self._path, movie), listitem=listitem, isFolder=False) 
 		xbmcplugin.endOfDirectory(handle=self._handle, succeeded=True, cacheToDisc=False)
@@ -157,7 +150,6 @@ class Main:
 	def DisplayTopCategories(self):
 		for item in TOP_CATEGORIES:
 			listitem = xbmcgui.ListItem(item['title'])
-			print "Adding item " + str(item)
 			lnk = item['link']
 			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?category=%s" % (self._path, lnk), listitem=listitem, isFolder=True) 
 		xbmcplugin.endOfDirectory( handle=self._handle, succeeded=True, cacheToDisc=False )
@@ -165,7 +157,6 @@ class Main:
 	def DisplayGenres(self):
 		for item in CAT_GENRES: 
 			listitem = xbmcgui.ListItem(item['title'])
-			print "Adding item " + str(item)
 			lnk = item['link']
 			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?category=genre//%s" % (self._path, lnk), listitem=listitem, isFolder=True) 
 		xbmcplugin.endOfDirectory( handle=self._handle, succeeded=True, cacheToDisc=False )
@@ -175,6 +166,7 @@ class Main:
 		self.settings = {}
 		self.settings["email"] = __settings__.getSetting("email")
 		self.settings["password"] = __settings__.getSetting("password")
+		self.settings["maxTitles"] = int(__settings__.getSetting("maxTitles"))
 		self.settings["pipelightName"] = __settings__.getSetting("pipelightName")
 		self.settings["pipelightDirectory"] = __settings__.getSetting("pipelightDirectory")
 		self.settings["mozillaDirectory"] = __settings__.getSetting("mozillaDirectory")
