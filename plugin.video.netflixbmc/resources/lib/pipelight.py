@@ -155,7 +155,12 @@ if __name__ == "__main__":
 	pipelightName = sys.argv.pop(0)
 	pipelightDirectory = sys.argv.pop(0)
 	mozillaDirectory = sys.argv.pop(0)
+	gpuAccel = sys.argv.pop(0)
 	url = sys.argv.pop(0)
+
+	# force gpu acceleration if specified to
+	if gpuAccel == "true":
+		os.putenv("PIPELIGHT_GPUACCELERATION", "1")
 
 	cookies = []
 	c = []
@@ -169,9 +174,6 @@ if __name__ == "__main__":
 			cookies.append(c)
 			c = []
 			
-	print "======= BEGIN SCRIPT ======="
-	print url
-	print cookies
 	player = Pipelight(pipelightName, pipelightDirectory, mozillaDirectory)
 	player.play(url, cookies)
 

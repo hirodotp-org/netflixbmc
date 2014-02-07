@@ -95,7 +95,8 @@ class Main:
 
 				home = os.getenv("HOME")
 				cmd = os.path.abspath("%s/.xbmc/addons/plugin.video.netflixbmc/resources/lib/pipelight.py" % (home))
-				args = [cmd, self.settings['pipelightName'], self.settings['pipelightDirectory'], self.settings['mozillaDirectory'], movie]
+
+				args = [cmd, self.settings['pipelightName'], self.settings['pipelightDirectory'], self.settings['mozillaDirectory'], self.settings['gpuAccel'], movie]
 				for cookie in cookies:
 					args.append(cookie[0])
 					args.append(cookie[1])
@@ -173,6 +174,7 @@ class Main:
 		self.settings["email"] = __settings__.getSetting("email")
 		self.settings["password"] = __settings__.getSetting("password")
 		self.settings["maxTitles"] = int(__settings__.getSetting("maxTitles"))
+		self.settings["gpuAccel"] = __settings__.getSetting("gpu")
 		self.settings["pipelightName"] = __settings__.getSetting("pipelightName")
 		self.settings["pipelightDirectory"] = __settings__.getSetting("pipelightDirectory")
 		self.settings["mozillaDirectory"] = __settings__.getSetting("mozillaDirectory")
