@@ -1,5 +1,6 @@
 import cookielib, urllib, urllib2
 import subprocess
+import HTMLParser
 import os, re, sys, time
 import xbmc, xbmcgui, xbmcplugin
 from xbmcaddon import Addon
@@ -15,9 +16,10 @@ __settings__ = Addon( id="plugin.video.netflixbmc" )
 TOP_CATEGORIES = [
 			{'title': "Instant Queue", 'link': 'instant'}, 
 			{'title': "New Release", 'link': 'new'},
-			{'title': "Recently Added", 'link': 'recent'},
+			{'title': "Movies by Genre", 'link': 'genre'},
 			{'title': "High Definition", 'link': 'hd'},
-			{'title': "Movies by Genre", 'link': 'genre'}
+			{'title': "Just for Kids", 'link': 'kids'},
+			{'title': "Recently Added", 'link': 'recent'}
 ]
 
 CAT_GENRES = [ 
@@ -44,6 +46,30 @@ CAT_GENRES = [
 		{'title': "TV Shows", 'link': 'tv'}
 ]
 
+KID_GENRES = [ 
+		{'title': "Action", 'link': 'action'}, 
+		{'title': "Adventures", 'link': 'adventures'}, 
+		{'title': "Animated", 'link': 'animated'}, 
+		{'title': "Comedies", 'link': 'comedies'}, 
+		{'title': "Dinosaurs", 'link': 'dinosaurs'}, 
+		{'title': "Disney", 'link': 'disney'}, 
+		{'title': "Education", 'link': 'education'}, 
+		{'title': "Fairy Tales", 'link': 'fairytales'}, 
+		{'title': "From Books", 'link': 'frombooks'}, 
+		{'title': "Girl Power", 'link': 'girlpower'}, 
+		{'title': "Little Kids", 'link': 'littlekids'}, 
+		{'title': "Musicals", 'link': 'musicals'}, 
+		{'title': "Ocean Adventures", 'link': 'ocean'}, 
+		{'title': "Princesses", 'link': 'princesses'}, 
+		{'title': "Robots", 'link': 'robots'}, 
+		{'title': "Science & Nature", 'link': 'science'}, 
+		{'title': "Sci-Fi", 'link': 'scifi'}, 
+		{'title': "Sing-Alongs", 'link': 'sing'}, 
+		{'title': "Sports", 'link': 'sports'}, 
+		{'title': "Superheroes", 'link': 'superheroes'}, 
+		{'title': "Wild Kingdom", 'link': 'wildkingdom'}
+]
+
 GENRE_ID_MAP = {
 			'action': '1365',
 			'anime': '7424',
@@ -68,11 +94,36 @@ GENRE_ID_MAP = {
 			'tv': '83'
 }
 
+KID_ID_MAP = {
+			'action': '67659',
+			'adventures': '67596',
+			'animated': '67602',
+			'comedies': '67599',
+			'dinosaurs': '67687',
+			'disney': '67673',
+			'education': '67612',
+			'fairytales': '73602',
+			'frombooks': '67595',
+			'girlpower': '67608',
+			'littlekids': '74253',
+			'musicals': '431311',
+			'ocean': '67635',
+			'princesses': '67624',
+			'robots': '67688',
+			'science': '73340',
+			'scifi': '67656',
+			'sing': '67598',
+			'sports': '67641',
+			'superheroes': '67698',
+			'wildkingdom': '67607'
+}
+
 class Main:
 	def __init__(self):
 		self._path = sys.argv[0]
 		self._handle = int(sys.argv[1])
 		self._get_settings()
+		self.parser = HTMLParser.HTMLParser()
 
 		param = sys.argv[2]
 		if param:
@@ -128,7 +179,7 @@ class Main:
 						genre = None
 
 					if genre is None:
-						self.DisplayGenres()
+						self.DisplayGenres('genre', CAT_GENRES)
 					else:
 						scraper = NetflixbmcScraper()
 						scraper.SignIn(self.settings['email'], self.settings['password'])
@@ -144,28 +195,41 @@ class Main:
 					scraper.SignIn(self.settings['email'], self.settings['password'])
 					mylist = scraper.GetRecentReleaseList()
 					self.DisplayMyList(mylist)
+				elif category == 'kids':
+					try:
+						genre = genre.split("//").pop(0)
+					except:
+						genre = None
+
+					if genre is None:
+						self.DisplayGenres('kids', KID_GENRES)
+					else:
+						scraper = NetflixbmcScraper()
+						scraper.SignIn(self.settings['email'], self.settings['password'])
+						mylist = scraper.GetGenreList(KID_ID_MAP[genre], self.settings['maxTitles'], True)
+						self.DisplayMyList(mylist)
 		else:
 			self.DisplayTopCategories()
 
 	def DisplayMyList(self, mylist):
 		for item in mylist:
-			listitem = xbmcgui.ListItem(item['title'], iconImage=item['boxart'], thumbnailImage=item['boxart'])
+			listitem = xbmcgui.ListItem(self.parser.unescape(item['title']), iconImage=item['boxart'], thumbnailImage=item['boxart'])
 			movie = urllib.urlencode({'movie': item['movie']})
 			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?%s" % (self._path, movie), listitem=listitem, isFolder=False) 
 		xbmcplugin.endOfDirectory(handle=self._handle, succeeded=True, cacheToDisc=False)
 
 	def DisplayTopCategories(self):
 		for item in TOP_CATEGORIES:
-			listitem = xbmcgui.ListItem(item['title'])
+			listitem = xbmcgui.ListItem(self.parser.unescape(item['title']))
 			lnk = item['link']
 			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?category=%s" % (self._path, lnk), listitem=listitem, isFolder=True) 
 		xbmcplugin.endOfDirectory( handle=self._handle, succeeded=True, cacheToDisc=False )
 			
-	def DisplayGenres(self):
-		for item in CAT_GENRES: 
-			listitem = xbmcgui.ListItem(item['title'])
+	def DisplayGenres(self, category, genres):
+		for item in genres: 
+			listitem = xbmcgui.ListItem(self.parser.unescape(item['title']))
 			lnk = item['link']
-			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?category=genre//%s" % (self._path, lnk), listitem=listitem, isFolder=True) 
+			xbmcplugin.addDirectoryItem(handle=self._handle, url="%s?category=%s//%s" % (self._path, category, lnk), listitem=listitem, isFolder=True) 
 		xbmcplugin.endOfDirectory( handle=self._handle, succeeded=True, cacheToDisc=False )
 
 	def _get_settings( self ):

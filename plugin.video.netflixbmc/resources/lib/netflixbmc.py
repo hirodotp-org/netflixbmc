@@ -82,14 +82,18 @@ class NetflixbmcScraper:
 
 		return(titles)
 
-        def GetGenreList(self, id, maxResults):
+        def GetGenreList(self, id, maxResults, kids = False):
 		page = 1
 		total = 0
 		titles = []
 		hdrs = { 'User-Agent' : self.ua }
 
 		while True:
-			url = 'http://movies.netflix.com/WiGenre?agid=%s&np=1&pn=%s' % (id, page)
+			if kids:
+				url = 'http://www.netflix.com/KidsAltGenre?agid=%s&np=1&pn=%s' % (id, page)
+			else:
+				url = 'http://movies.netflix.com/WiGenre?agid=%s&np=1&pn=%s' % (id, page)
+
 			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 			req = urllib2.Request(url, headers=hdrs)
 			response = opener.open(req)

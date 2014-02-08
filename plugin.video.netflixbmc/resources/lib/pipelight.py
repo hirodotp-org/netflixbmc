@@ -49,6 +49,7 @@ class PipelightMainWindow(QtGui.QMainWindow):
 		if not self.is_embedded:
 			print "Timeout reached and no Silverlight application embedded yet!"
 			self.close()
+			sys.exit(1)
 
 	def close(self):
 		os.unsetenv("PIPELIGHT_X11WINDOW")
@@ -74,11 +75,9 @@ class X11Container(QtGui.QX11EmbedContainer):
 		self.window().keyPressEvent(event)
 
 	def clientIsEmbedded(self):
-		print "*CLIENT EMBEDDED*"
 		self.window().is_embedded = True
 
 	def clientClose(self):
-		print "*CLIENT CLOSED*"
 		self.window().close()
 
 class WebPage(QtWebKit.QWebPage):
